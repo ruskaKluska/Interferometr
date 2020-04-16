@@ -2,57 +2,45 @@ package wstepne;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Random;
+import java.util.ResourceBundle;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.HeadlessException;
-import java.awt.Image;
-import java.awt.Polygon;
-import java.awt.Shape;
-import javax.imageio.ImageIO;
-
-import javax.imageio.ImageIO;
-
-import javax.print.DocFlavor.URL;
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
-
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
-import java.util.*;
-import java.util.List;
-import java.util.ArrayList;
-import java.io.*;
-
-
+import java.io.File;
+import java.io.IOException;
+import java.util.Locale;
 import java.awt.event.ActionListener;
 
 public class Inter extends JFrame implements ActionListener,MouseListener, MouseMotionListener {
 	
 	private static final long serialVersionUID = 1L;
+	private ResourceBundle resourBundle = ResourceBundle.getBundle("wstepne/labels", new Locale("pl"));
 
 	JPanel leftPanel, rightPanel, centerPanel, topPanel, bottomPanel;
 	JMenuBar menuBar;
@@ -64,14 +52,16 @@ public class Inter extends JFrame implements ActionListener,MouseListener, Mouse
 	JButton buttonEn, buttonPl, buttonStart, buttonStop;
 	
 	static final int SLIDER_MIN = 0;//dane do slidera
-    static final int SLIDER_MAX = 30;
-    static final int SLIDER_INIT = 1;
+    	static final int SLIDER_MAX = 30;
+   	static final int SLIDER_INIT = 1;
     
 	int add, oldX,currentX;
 	static BufferedImage image;//uzywane objekty implementuje na poczatku
 	JFrame parentFrame;
 	static File outputFile;
 	static String fname;
+	String source = resourBundle.getString("source");
+	String detector = resourBundle.getString("detector");
 	
 	public Inter(String title) throws HeadlessException
 	{		
@@ -84,8 +74,8 @@ public class Inter extends JFrame implements ActionListener,MouseListener, Mouse
         
         menuBar=new JMenuBar();
         menu=new JMenu("Menu");
-        dowland=new JMenuItem("Wprowadz dane z pliku");
-        save=new JMenuItem("Zapisz dane do pliku");
+        dowland=new JMenuItem(resourBundle.getString("menu.dowland"));
+        save=new JMenuItem(resourBundle.getString("menu.save"));
         
         
         
@@ -127,7 +117,7 @@ public class Inter extends JFrame implements ActionListener,MouseListener, Mouse
         Color color1=new Color(120, 161, 161);
         topPanel.setBackground(color1);
         
-        labelDlugosc=new JLabel("Dlugosc fali: ");
+        labelDlugosc=new JLabel(resourBundle.getString("waveLenght"));
         
         slider=new JSlider(JSlider.HORIZONTAL, SLIDER_MIN, SLIDER_MAX, SLIDER_INIT);//slider do ustawiania dlugosci fali
         slider.setMinorTickSpacing(10);
@@ -144,14 +134,20 @@ public class Inter extends JFrame implements ActionListener,MouseListener, Mouse
 		buttonEn=new JButton("English");
 		buttonPl=new JButton("Polish");
 		
-		/*
+	
 		
 		buttonEn.addActionListener(new ActionListener() 
 	       {
 	           @Override
 	           public void actionPerformed(ActionEvent e) 
 	           {
-	        	   
+			   resourBundle = ResourceBundle.getBundle("wstepne/labels", new Locale("en"));
+	        	   dowland.setText(resourBundle.getString("menu.dowland"));
+	        	   save.setText(resourBundle.getString("menu.save"));
+	        	   labelDlugosc.setText(resourBundle.getString("waveLenght"));
+	        	   source = resourBundle.getString("source");
+	        	   detector = resourBundle.getString("detector");
+	        	   repaint();   
 	           }
 	       });
 	       
@@ -160,11 +156,17 @@ public class Inter extends JFrame implements ActionListener,MouseListener, Mouse
 	           @Override
 	           public void actionPerformed(ActionEvent e) 
 	           {
+			   resourBundle = ResourceBundle.getBundle("wstepne/labels", new Locale("pl"));  
+	        	   dowland.setText(resourBundle.getString("menu.dowland"));
+	        	   save.setText(resourBundle.getString("menu.save"));
+	        	   labelDlugosc.setText(resourBundle.getString("waveLenght"));
+	        	   source =  resourBundle.getString("source");
+	        	   detector = resourBundle.getString("detector");
+	        	   repaint();
 	        	   
 	           }
 	       });
 	       
-	       */
         
 		topPanel.add(labelDlugosc);
 		topPanel.add(slider);
@@ -256,8 +258,8 @@ public class Inter extends JFrame implements ActionListener,MouseListener, Mouse
         		intG2.setFont(new Font("Verdana", Font.BOLD , 10));
         		intG2.drawString("Z1",160, 80);
         		intG2.drawString("Z2",25+(add), 240);
-        		intG2.drawString("Zrodlo",110, 500);
-        		intG2.drawString("Detektor",300, 250);
+        		intG2.drawString(source,110, 500);
+        		intG2.drawString(detector,300, 250);
         		intG2.setColor(Color.red);
         		intG2.draw(rec3);
         		intG2.draw(rec4);
