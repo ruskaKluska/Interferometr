@@ -34,6 +34,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
@@ -49,15 +52,17 @@ import com.itextpdf.text.pdf.PdfWriter;
 public class InterferometrHalendyWiater extends JFrame implements ActionListener, KeyListener {
 	
 	private static final long serialVersionUID = 1L;
+	private ResourceBundle resourceBundle = ResourceBundle.getBundle("interferometr/labels", new Locale("pl"));
 	
 	JPanel leftPanel, rightPanel, centerPanel, topPanel, bottomPanel;
 	JMenuBar menuBar;
-	JMenu fileMenu, generatorMenu;
-	JMenuItem save, download, amp2, amp5, amp10;
+	JMenu fileMenu, generatorMenu, instructionMenu;
+	JMenuItem save, download, amp2, amp5, amp10, instruction;
 	
-	JLabel labelDlugosc, labelCm, textLabel;
+	JLabel labelLenght, labelCm, textLabel;
 	JSlider slider;
-	JButton buttonEn, buttonPl, buttonStart, buttonStop;
+	JButton buttonEn, buttonPl, buttonStart, buttonStop, buttonEnd;
+	String selectedButton = "B";
 	
 	static final int SLIDER_MIN = 1;//dane do slidera
     static final int SLIDER_MAX = 30;
@@ -90,6 +95,14 @@ public class InterferometrHalendyWiater extends JFrame implements ActionListener
 	static Color colorText=new Color(12, 196, 166);
 	
 	Timer timer=new Timer(100,this);
+	String pictureGenerator = resourceBundle.getString("source");
+	String pictureDetector = resourceBundle.getString("det");
+	String pictureMirror100 = resourceBundle.getString("mirr100");
+	String pictureMirror50 = resourceBundle.getString("mirr50");
+	String place = resourceBundle.getString("place");
+	String intensity = resourceBundle.getString("int");
+	String timeGraph = resourceBundle.getString("time");
+	String voltage = resourceBundle.getString("vol");
 	
 	public InterferometrHalendyWiater(String title) throws HeadlessException
 	{		
@@ -103,7 +116,7 @@ public class InterferometrHalendyWiater extends JFrame implements ActionListener
         
         menuBar=new JMenuBar();
         
-        generatorMenu=new JMenu("Ustawienia generatora");
+        generatorMenu=new JMenu(resourceBundle.getString("genSettings"));
         amp2=new JMenuItem("2 V/m");
         amp2.addActionListener(this);
         amp2.setSelected(true);
@@ -117,11 +130,14 @@ public class InterferometrHalendyWiater extends JFrame implements ActionListener
 		group.add(amp5);
 		group.add(amp10);
         
-        fileMenu=new JMenu("Plik");
-        download=new JMenuItem("Wprowadz dane z pliku");
+        fileMenu=new JMenu(resourceBundle.getString("Fille"));
+        download=new JMenuItem(resourceBundle.getString("menu.dow"));
         download.addActionListener(this);
-        save=new JMenuItem("Zapisz dane do pliku");
+        save=new JMenuItem(resourceBundle.getString("menu.save"));
         save.addActionListener(this);
+        
+        instructionMenu = new JMenu(resourceBundle.getString("instru"));
+        instruction = new JMenuItem(resourceBundle.getString("manual"));
 	       
         generatorMenu.add(amp2);
         generatorMenu.add(amp5);  
@@ -132,6 +148,9 @@ public class InterferometrHalendyWiater extends JFrame implements ActionListener
         fileMenu.addSeparator();
         fileMenu.add(save);
         menuBar.add(fileMenu);
+        
+        instructionMenu.add(instruction);
+        menuBar.add(instructionMenu);
         
         this.setJMenuBar(menuBar);
         
@@ -146,8 +165,8 @@ public class InterferometrHalendyWiater extends JFrame implements ActionListener
         };
         topPanel.setLayout(new FlowLayout());
         
-        labelDlugosc=new JLabel("Dlugosc fali: ");
-        labelDlugosc.setForeground(colorText);
+        labelLenght=new JLabel(resourceBundle.getString("waveLenght"));
+        labelLenght.setForeground(colorText);
         
         slider=new JSlider(JSlider.HORIZONTAL, SLIDER_MIN, SLIDER_MAX, SLIDER_INIT);//slider do ustawiania dlugosci fali
         slider.setMajorTickSpacing(29);
@@ -168,11 +187,63 @@ public class InterferometrHalendyWiater extends JFrame implements ActionListener
 		
 		buttonEn.setBackground(colorComponent);
 		buttonEn.setForeground(colorText);
+		buttonEn.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				resourceBundle = ResourceBundle.getBundle("interferometr/labels", new Locale("en"));
+				download.setText(resourceBundle.getString("menu.dow"));
+	        	save.setText(resourceBundle.getString("menu.save"));
+	        	pictureDetector = resourceBundle.getString("det");
+	        	pictureMirror100 = resourceBundle.getString("mirr100");
+	        	pictureMirror50 = resourceBundle.getString("mirr50");
+	        	fileMenu.setText(resourceBundle.getString("Fille"));
+	        	labelLenght.setText(resourceBundle.getString("waveLenght"));
+	        	generatorMenu.setText(resourceBundle.getString("genSettings"));
+	        	lineGraph.setTitle(resourceBundle.getString("graphup"));
+	        	lineGraph2.setTitle(resourceBundle.getString("graphdown"));
+	        	place = resourceBundle.getString("place");
+	        	intensity = resourceBundle.getString("int");
+	        	timeGraph = resourceBundle.getString("time");
+	        	voltage = resourceBundle.getString("vol");
+	        	instructionMenu.setText(resourceBundle.getString("instru"));
+	        	instruction.setText(resourceBundle.getString("manual"));
+	        	buttonEnd.setText(resourceBundle.getString("end"));
+	        	repaint();
+			}
+			
+		});
 	        
 		buttonPl.setBackground(colorComponent);
 		buttonPl.setForeground(colorText);
+		buttonPl.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				resourceBundle = ResourceBundle.getBundle("interferometr/labels", new Locale("pl"));
+				download.setText(resourceBundle.getString("menu.dow"));
+	        	save.setText(resourceBundle.getString("menu.save"));
+	        	pictureDetector = resourceBundle.getString("det");
+	        	pictureMirror100 = resourceBundle.getString("mirr100");
+	        	pictureMirror50 = resourceBundle.getString("mirr50");
+	        	fileMenu.setText(resourceBundle.getString("Fille"));
+	        	labelLenght.setText(resourceBundle.getString("waveLenght"));
+	        	generatorMenu.setText(resourceBundle.getString("genSettings"));
+	        	lineGraph.setTitle(resourceBundle.getString("graphup"));
+	        	lineGraph2.setTitle(resourceBundle.getString("graphdown"));
+	        	place = resourceBundle.getString("place");
+	        	intensity = resourceBundle.getString("int");
+	        	timeGraph = resourceBundle.getString("time");
+	        	voltage = resourceBundle.getString("vol");
+	        	instructionMenu.setText(resourceBundle.getString("instru"));
+	        	instruction.setText(resourceBundle.getString("manual"));
+	        	buttonEnd.setText(resourceBundle.getString("end"));
+	        	repaint();
+			}
+			
+		});
         
-		topPanel.add(labelDlugosc);
+		topPanel.add(labelLenght);
 		topPanel.add(slider);
 		topPanel.add(textLabel);
         topPanel.add(labelCm);
@@ -196,13 +267,21 @@ public class InterferometrHalendyWiater extends JFrame implements ActionListener
         
         buttonStart=new JButton("Start",iconPlay);
         buttonStop=new JButton("Stop",iconStop);
+        buttonEnd = new JButton(resourceBundle.getString("end"));
         
         buttonStart.setBackground(colorComponent);
         buttonStart.setForeground(colorText);
+        buttonStart.setActionCommand("A");
+		buttonStop.setActionCommand("B");
         
         buttonStop.setBackground(colorComponent);
         buttonStop.setForeground(colorText);
         buttonStop.setSelected(true);
+        
+        buttonEnd.setBackground(colorComponent);
+        buttonEnd.setForeground(colorText);
+        
+        
         
         buttonStart.addActionListener(new ActionListener() //uruchamiamy symulacje
 	       {
@@ -212,6 +291,7 @@ public class InterferometrHalendyWiater extends JFrame implements ActionListener
 	        	   slider.disable();//slider sie deaktywuje
 	        	   requestFocus();//ustawiamy focus na frame zeby zwierciadlo sie ruszalo
 	        	   timer.start();//timer tez jest po to zeby zwierciadlo sie ruszalo
+	        	   selectedButton = "A";//ustawiamy aby pojawil sie oscykoskop
 	           }
 	       });
         
@@ -222,8 +302,19 @@ public class InterferometrHalendyWiater extends JFrame implements ActionListener
 	           {
 	        	   slider.enable();//teraz mozemy zmienic wartosc na sliderze
 	        	   timer.stop();
+	        	   selectedButton = "B";// dane z oscyloskopu znikaja
 	           }
 	       });
+        
+        buttonEnd.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.exit(1);
+				
+			}
+        	
+        });
         
         ButtonGroup group2 = new ButtonGroup();
 		group2.add(buttonStart);
@@ -231,6 +322,7 @@ public class InterferometrHalendyWiater extends JFrame implements ActionListener
         
         bottomPanel.add(buttonStart);
         bottomPanel.add(buttonStop);
+        bottomPanel.add(buttonEnd);
         
         this.add(bottomPanel, BorderLayout.PAGE_END);
 //--leftPanel-----------------------------------------------------------
@@ -267,6 +359,7 @@ public class InterferometrHalendyWiater extends JFrame implements ActionListener
         		super.paintComponent(g);
         		ObrazHalendyWiater obraz=new ObrazHalendyWiater();
         		obraz.setAdd(add);
+        		obraz.setNames(pictureGenerator,pictureDetector,pictureMirror100,pictureMirror50);// resourceBundle.getString("detector"), resourceBundle.getString("mirr100"), resourceBundle.getString("mirr50"));;
         		obraz.paint(g);
         		}
     	};
@@ -288,9 +381,9 @@ public class InterferometrHalendyWiater extends JFrame implements ActionListener
         xyDataset = new XYSeriesCollection(dataSet); 
         
         lineGraph = ChartFactory.createXYLineChart 
-                ("Zaleznosc natezenia od polozenia",  // Title 
-                  "Polozenie",           // X-Axis label 
-                  "Natezenie",           // Y-Axis label 
+                (resourceBundle.getString("graphup"),  // Title Zaleznosc natezenia od polozenia
+                  place,           // X-Axis label polozenie
+                  intensity,           // Y-Axis label natezenie
                   xyDataset,          // Dataset 
                   PlotOrientation.VERTICAL,        //Plot orientation 
                   false,                //show legend 
@@ -318,7 +411,7 @@ public class InterferometrHalendyWiater extends JFrame implements ActionListener
    
         dataSet2 = new XYSeries("");
         dataSet2.add(0,scale);//po to zeby skala sie nie zmieniala przy kazdej zmianie natezenia
-        
+        if(selectedButton =="A") {
         for (double i=0.05; i <5.05; i+=0.05)//zeby przebieg byl prostokatny
         	dataSet2.add(i,0);
         for (double i=5.05; i <10.05; i+=0.05)
@@ -333,13 +426,14 @@ public class InterferometrHalendyWiater extends JFrame implements ActionListener
         	dataSet2.add(i,I[getCm]);
         for (double i=30.05; i <33.25; i+=0.05)
         	dataSet2.add(i,0);
+        }
         
         xyDataset2 = new XYSeriesCollection(dataSet2); 
         
         lineGraph2 = ChartFactory.createXYLineChart 
-                ("Oscyloskop",  // Title 
-                  "Os czasu",           // X-Axis label 
-                  "Os napiecia",           // Y-Axis label 
+                (resourceBundle.getString("graphdown"),  // Title Oscyloskop
+                  timeGraph,           // X-Axis label os czasu
+                  voltage,           // Y-Axis label os napiecia
                   xyDataset2,          // Dataset 
                   PlotOrientation.VERTICAL,        //Plot orientation 
                   false,                //show legend 
@@ -390,13 +484,19 @@ public class InterferometrHalendyWiater extends JFrame implements ActionListener
 	  }
 	  
 	  //tutaj zapisujemy pdf
-	  PdfWriter.getInstance(document, new FileOutputStream(fname + ".pdf"));
-	  document.open();
-	  document.add(new Paragraph("Dlugosc fali: "+Integer.toString(lambda)+" cm"));
-	  document.add(new Paragraph("Amplituda fali: "+Integer.toString(amplitude)+" V/m"));
-	  Image chartFile=Image.getInstance(fname + ".png");
-	  document.add(chartFile);
-	  document.close();
+	  try {
+		  PdfWriter.getInstance(document, new FileOutputStream(fname + ".pdf"));
+		  document.open();
+		  document.add(new Paragraph("Dlugosc fali: "+Integer.toString(lambda)+" cm"));
+		  document.add(new Paragraph("Amplituda fali: "+Integer.toString(amplitude)+" V/m"));
+		  Image chartFile=Image.getInstance(fname + ".png");
+		  document.add(chartFile);
+		  document.close();
+		  
+	  } catch(FileNotFoundException e) {
+		  System.out.println(e.getMessage());
+	  }
+	  
 	}
 
 	
