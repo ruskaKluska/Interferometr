@@ -8,13 +8,27 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class ObrazHalendyWiater {
 	
 	static int add;
+	private ResourceBundle resourceBundle = ResourceBundle.getBundle("interferometr/labels", new Locale("pl"));
+	String generatorName = "Generator"; 
+	String detectorName = "Detektor";
+	String mirror100Name = "Zwierciadło 100%";
+	String mirror50Name = "Zwierciadło 50%";
 
 	public void setAdd(int add) {
 		this.add = add;//pobieramy wartosc o jaka ma sie zmieniac polozenie zwierciadla
+	}
+	
+	public void setNames(String g, String d, String m100, String m50) {
+		generatorName = g;
+		detectorName = d;
+		mirror100Name = m100;
+		mirror50Name = m50;
 	}
 	
 	public void paint (Graphics intG) {
@@ -62,11 +76,11 @@ public class ObrazHalendyWiater {
 		intG2.fill(mirror100B);
 		
 		intG2.setFont(new Font("Verdana", Font.BOLD , 15));
-		intG2.drawString("Zwierciadlo 100%",210, 55);
-		intG2.drawString("Zwierciadlo 100%",40+(add), 255);
-		intG2.drawString("Zwierciadlo 50%",410, 280);
-		intG2.drawString("Generator",270, 565);
-		intG2.drawString("Detektor",645, 270);
+		intG2.drawString(mirror100Name,210, 55);
+		intG2.drawString(mirror100Name,40+(add), 255);
+		intG2.drawString(mirror50Name,410, 280);
+		intG2.drawString(generatorName,270, 565);
+		intG2.drawString(detectorName,645, 270);
 		
 		intG2.setPaint(gradientPaintG);
 		intG2.fill(generator);
@@ -74,5 +88,6 @@ public class ObrazHalendyWiater {
 		intG2.setPaint(gradientPaintD);
 		intG2.fill(detector);
 	}
+	
 
 }
