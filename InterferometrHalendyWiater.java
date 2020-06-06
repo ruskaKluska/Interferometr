@@ -1,4 +1,4 @@
-package interferometr;
+package pl.edu.pw.fizyka.pojava.projekt6;
 
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -49,10 +49,10 @@ import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfWriter;
 
 
-public class InterferometrHalendyWiater extends JFrame implements ActionListener, KeyListener {
+public class Interferometr extends JFrame implements ActionListener, KeyListener {
 	
 	private static final long serialVersionUID = 1L;
-	private ResourceBundle resourceBundle = ResourceBundle.getBundle("interferometr/labels", new Locale("pl"));
+	private ResourceBundle resourceBundle = ResourceBundle.getBundle("pl.edu.pw.fizyka.pojava.projekt6/labels", new Locale("ru")); //informacje dlatego ru znajdują się w "labels_ru.properties"
 	
 	JPanel leftPanel, rightPanel, centerPanel, topPanel, bottomPanel;
 	JMenuBar menuBar;
@@ -104,13 +104,16 @@ public class InterferometrHalendyWiater extends JFrame implements ActionListener
 	String timeGraph = resourceBundle.getString("time");
 	String voltage = resourceBundle.getString("vol");
 	
-	public InterferometrHalendyWiater(String title) throws HeadlessException
+	public Interferometr(String title) throws HeadlessException
 	{		
 		super(title);
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		this.setMinimumSize(minSize);
-        this.setSize(1200,800);
-        this.setLayout(new BorderLayout());       
+        //this.setSize(1200,800);
+        this.setLayout(new BorderLayout()); 
+        this.setLocationRelativeTo(null);//centrowanie 
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH); //
+        this.setUndecorated(true);
         
 //--menu----------------------------------------------------------------
         
@@ -120,7 +123,7 @@ public class InterferometrHalendyWiater extends JFrame implements ActionListener
         amp2=new JMenuItem("2 V/m");
         amp2.addActionListener(this);
         amp2.setSelected(true);
-        amp5=new JMenuItem("5 V/m");
+        amp5=new JMenuItem("5 V/m ");
         amp5.addActionListener(this);
         amp10=new JMenuItem("10 V/m");
         amp10.addActionListener(this);
@@ -138,6 +141,16 @@ public class InterferometrHalendyWiater extends JFrame implements ActionListener
         
         instructionMenu = new JMenu(resourceBundle.getString("instru"));
         instruction = new JMenuItem(resourceBundle.getString("manual"));
+        instruction.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Instruction frame = new Instruction();
+				frame.setVisible(true);
+				
+			}
+        	
+        });
 	       
         generatorMenu.add(amp2);
         generatorMenu.add(amp5);  
@@ -182,8 +195,8 @@ public class InterferometrHalendyWiater extends JFrame implements ActionListener
 		labelCm=new JLabel(" cm                      ");
 		labelCm.setForeground(colorText);
 		
-		buttonEn=new JButton("English");
-		buttonPl=new JButton("Polish");
+		buttonEn=new JButton(resourceBundle.getString("eng.lang"));
+		buttonPl=new JButton(resourceBundle.getString("pol.lang"));
 		
 		buttonEn.setBackground(colorComponent);
 		buttonEn.setForeground(colorText);
@@ -191,7 +204,7 @@ public class InterferometrHalendyWiater extends JFrame implements ActionListener
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				resourceBundle = ResourceBundle.getBundle("interferometr/labels", new Locale("en"));
+				resourceBundle = ResourceBundle.getBundle("pl.edu.pw.fizyka.pojava.projekt6/labels", new Locale("en"));
 				download.setText(resourceBundle.getString("menu.dow"));
 	        	save.setText(resourceBundle.getString("menu.save"));
 	        	pictureDetector = resourceBundle.getString("det");
@@ -209,6 +222,8 @@ public class InterferometrHalendyWiater extends JFrame implements ActionListener
 	        	instructionMenu.setText(resourceBundle.getString("instru"));
 	        	instruction.setText(resourceBundle.getString("manual"));
 	        	buttonEnd.setText(resourceBundle.getString("end"));
+	        	buttonEn.setText(resourceBundle.getString("eng.lang"));
+	        	buttonPl.setText(resourceBundle.getString("pol.lang"));
 	        	repaint();
 			}
 			
@@ -220,7 +235,7 @@ public class InterferometrHalendyWiater extends JFrame implements ActionListener
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				resourceBundle = ResourceBundle.getBundle("interferometr/labels", new Locale("pl"));
+				resourceBundle = ResourceBundle.getBundle("pl.edu.pw.fizyka.pojava.projekt6/labels", new Locale("ru"));
 				download.setText(resourceBundle.getString("menu.dow"));
 	        	save.setText(resourceBundle.getString("menu.save"));
 	        	pictureDetector = resourceBundle.getString("det");
@@ -238,6 +253,8 @@ public class InterferometrHalendyWiater extends JFrame implements ActionListener
 	        	instructionMenu.setText(resourceBundle.getString("instru"));
 	        	instruction.setText(resourceBundle.getString("manual"));
 	        	buttonEnd.setText(resourceBundle.getString("end"));
+	        	buttonEn.setText(resourceBundle.getString("eng.lang"));
+	        	buttonPl.setText(resourceBundle.getString("pol.lang"));
 	        	repaint();
 			}
 			
@@ -357,7 +374,7 @@ public class InterferometrHalendyWiater extends JFrame implements ActionListener
         	private static final long serialVersionUID = 1L;
         	public void paintComponent(Graphics g) { //tworzymy obraz interferometru
         		super.paintComponent(g);
-        		ObrazHalendyWiater obraz=new ObrazHalendyWiater();
+        		Picture obraz=new Picture();
         		obraz.setAdd(add);
         		obraz.setNames(pictureGenerator,pictureDetector,pictureMirror100,pictureMirror50);// resourceBundle.getString("detector"), resourceBundle.getString("mirr100"), resourceBundle.getString("mirr50"));;
         		obraz.paint(g);
@@ -501,7 +518,7 @@ public class InterferometrHalendyWiater extends JFrame implements ActionListener
 
 	
 	public static void main(String[] args) {
-		InterferometrHalendyWiater frame = new InterferometrHalendyWiater("Interferometr Michelsona");
+		Interferometr frame = new Interferometr("Interferometr Michelsona");
 		frame.setVisible(true);
 
 	}
