@@ -1,4 +1,4 @@
-package interferometr;
+package pl.edu.pw.fizyka.pojava.projekt6;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -6,22 +6,33 @@ import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-public class ObrazHalendyWiater {
+public class Picture {
 	
 	static int add;
-	private ResourceBundle resourceBundle = ResourceBundle.getBundle("interferometr/labels", new Locale("pl"));
+	private ResourceBundle resourceBundle = ResourceBundle.getBundle("pl.edu.pw.fizyka.pojava.projekt6.labels", new Locale("ru"));
 	String generatorName = "Generator"; 
 	String detectorName = "Detektor";
 	String mirror100Name = "Zwierciadło 100%";
 	String mirror50Name = "Zwierciadło 50%";
+	Line2D lineHor1 ;
+	Line2D lineHor2 ;
+	ArrayList<Line2D> list;
 
 	public void setAdd(int add) {
 		this.add = add;//pobieramy wartosc o jaka ma sie zmieniac polozenie zwierciadla
+	}
+	public double getXHor1() {
+		return (int) lineHor1.getX1();
+	}
+	public double getXHor2() {
+		return (int)lineHor2.getX1();
 	}
 	
 	public void setNames(String g, String d, String m100, String m50) {
@@ -49,12 +60,12 @@ public class ObrazHalendyWiater {
 		
 		Line2D lineVer1 = new Line2D.Double(375,30,375,580);
 		Line2D lineVer2 = new Line2D.Double(385,30,385,315);
-		Line2D lineHor1 = new Line2D.Double(90+(add),305,650,305);
-		Line2D lineHor2 = new Line2D.Double(90+(add),315,650,315);
+		 lineHor1 = new Line2D.Double(92+(add),305,650,305);
+		 lineHor2 = new Line2D.Double(92+(add),315,650,315);
 		Line2D mirror50 = new Line2D.Double(340,265,420,345);
 		
 		Rectangle2D mirror100A = new Rectangle2D.Double(340, 20, 80, 10);
-		Rectangle2D mirror100B = new Rectangle2D.Double(80+(add), 270, 10, 80);
+		Rectangle2D mirror100B = new Rectangle2D.Double(80+(add), 270, 10, 80); 
 		Rectangle2D generator = new Rectangle2D.Double(350, 580, 50, 50);
 		Rectangle2D detector = new Rectangle2D.Double(650, 285, 50, 50);
 		
@@ -87,6 +98,11 @@ public class ObrazHalendyWiater {
 		
 		intG2.setPaint(gradientPaintD);
 		intG2.fill(detector);
+		
+	}
+	public void drawAnimation(ArrayList<Shape> l,Graphics2D g2d) {
+		for(Shape L:l)
+			g2d.draw(L);
 	}
 	
 
