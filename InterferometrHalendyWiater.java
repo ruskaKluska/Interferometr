@@ -1,5 +1,5 @@
 package pl.edu.pw.fizyka.pojava.projekt6;
-
+//paraca wspólna : dużo większa część Monika, mniejsza Igi
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Locale;
 import java.util.ResourceBundle;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
@@ -48,20 +47,20 @@ import com.itextpdf.text.Image;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfWriter;
 
-
 public class Interferometr extends JFrame implements ActionListener, KeyListener {
 	
 	private static final long serialVersionUID = 1L;
 	private ResourceBundle resourceBundle = ResourceBundle.getBundle("pl.edu.pw.fizyka.pojava.projekt6/labels", new Locale("ru")); //informacje dlatego ru znajdują się w "labels_ru.properties"
 	
-	JPanel leftPanel, rightPanel, centerPanel, topPanel, bottomPanel;
+	JPanel leftPanel, rightPanel, topPanel, bottomPanel;
+	static CenterPanel centerPanel;
 	JMenuBar menuBar;
 	JMenu fileMenu, generatorMenu, instructionMenu;
 	JMenuItem save, download, amp2, amp5, amp10, instruction;
 	
 	JLabel labelLenght, labelCm, textLabel;
 	JSlider slider;
-	JButton buttonEn, buttonPl, buttonStart, buttonStop, buttonEnd;
+	JButton buttonEn, buttonPl, buttonStart, buttonStop, buttonEnd, buttonAn;
 	String selectedButton = "B";
 	
 	static final int SLIDER_MIN = 1;//dane do slidera
@@ -69,11 +68,13 @@ public class Interferometr extends JFrame implements ActionListener, KeyListener
     static final int SLIDER_INIT = 15;
     
     Dimension minSize=new Dimension(1200,800);
-	int add, velX;
+	static int add;
+	int velX;
 	static BufferedImage image;
 	JFrame parentFrame;
 	static File outputFile;
 	static String fname;
+	Graphics gr;
 	
 	XYSeries dataSet, dataSet2;
 	XYSeriesCollection xyDataset, xyDataset2;
@@ -86,7 +87,6 @@ public class Interferometr extends JFrame implements ActionListener, KeyListener
 	static BufferedImage imageOscy=null;
 	JLabel lblChart = new JLabel(); 
 	JLabel lblOscy = new JLabel();
-	Document document=new Document();
 	
 	static Color colorLight=new Color(23,163,163);
 	static Color colorDark=new Color(9,61,61);
@@ -112,7 +112,7 @@ public class Interferometr extends JFrame implements ActionListener, KeyListener
         //this.setSize(1200,800);
         this.setLayout(new BorderLayout()); 
         this.setLocationRelativeTo(null);//centrowanie 
-        this.setExtendedState(JFrame.MAXIMIZED_BOTH); //
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH); //maxymalizacja
         this.setUndecorated(true);
         
 //--menu----------------------------------------------------------------
@@ -170,7 +170,9 @@ public class Interferometr extends JFrame implements ActionListener, KeyListener
 //--topPanel------------------------------------------------------------
         
         topPanel=new JPanel() { //robimy gradientowe tlo
-        	public void paintComponent(Graphics g) {
+			private static final long serialVersionUID = 1L;
+
+			public void paintComponent(Graphics g) {
         		Graphics2D g2d=(Graphics2D) g;
         		g2d.setPaint(colorBG);
         		g2d.fillRect(0,0,getWidth(),getHeight());
@@ -204,12 +206,13 @@ public class Interferometr extends JFrame implements ActionListener, KeyListener
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if (selectedButton == "A") {
+					timer.start();
+					requestFocus();
+				} // aby zwierciadło mogło się ruszać gdy kilknie się inny przycisk
 				resourceBundle = ResourceBundle.getBundle("pl.edu.pw.fizyka.pojava.projekt6/labels", new Locale("en"));
 				download.setText(resourceBundle.getString("menu.dow"));
-	        	save.setText(resourceBundle.getString("menu.save"));
-	        	pictureDetector = resourceBundle.getString("det");
-	        	pictureMirror100 = resourceBundle.getString("mirr100");
-	        	pictureMirror50 = resourceBundle.getString("mirr50");
+	        	save.setText(resourceBundle.getString("menu.save"));	        	
 	        	fileMenu.setText(resourceBundle.getString("Fille"));
 	        	labelLenght.setText(resourceBundle.getString("waveLenght"));
 	        	generatorMenu.setText(resourceBundle.getString("genSettings"));
@@ -222,8 +225,13 @@ public class Interferometr extends JFrame implements ActionListener, KeyListener
 	        	instructionMenu.setText(resourceBundle.getString("instru"));
 	        	instruction.setText(resourceBundle.getString("manual"));
 	        	buttonEnd.setText(resourceBundle.getString("end"));
+	        	buttonAn.setText(resourceBundle.getString("animation"));
 	        	buttonEn.setText(resourceBundle.getString("eng.lang"));
 	        	buttonPl.setText(resourceBundle.getString("pol.lang"));
+	        	centerPanel.SetA(resourceBundle.getString("source"));
+	        	centerPanel.SetB(resourceBundle.getString("det"));
+	        	centerPanel.SetC(resourceBundle.getString("mirr100"));
+	        	centerPanel.SetD(resourceBundle.getString("mirr50"));
 	        	repaint();
 			}
 			
@@ -235,12 +243,13 @@ public class Interferometr extends JFrame implements ActionListener, KeyListener
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if (selectedButton == "A") {
+					timer.start();
+					requestFocus();
+				}
 				resourceBundle = ResourceBundle.getBundle("pl.edu.pw.fizyka.pojava.projekt6/labels", new Locale("ru"));
 				download.setText(resourceBundle.getString("menu.dow"));
 	        	save.setText(resourceBundle.getString("menu.save"));
-	        	pictureDetector = resourceBundle.getString("det");
-	        	pictureMirror100 = resourceBundle.getString("mirr100");
-	        	pictureMirror50 = resourceBundle.getString("mirr50");
 	        	fileMenu.setText(resourceBundle.getString("Fille"));
 	        	labelLenght.setText(resourceBundle.getString("waveLenght"));
 	        	generatorMenu.setText(resourceBundle.getString("genSettings"));
@@ -253,8 +262,13 @@ public class Interferometr extends JFrame implements ActionListener, KeyListener
 	        	instructionMenu.setText(resourceBundle.getString("instru"));
 	        	instruction.setText(resourceBundle.getString("manual"));
 	        	buttonEnd.setText(resourceBundle.getString("end"));
+	        	buttonAn.setText(resourceBundle.getString("animation"));
 	        	buttonEn.setText(resourceBundle.getString("eng.lang"));
 	        	buttonPl.setText(resourceBundle.getString("pol.lang"));
+	        	centerPanel.SetA(resourceBundle.getString("source"));
+	        	centerPanel.SetB(resourceBundle.getString("det"));
+	        	centerPanel.SetC(resourceBundle.getString("mirr100"));
+	        	centerPanel.SetD(resourceBundle.getString("mirr50"));
 	        	repaint();
 			}
 			
@@ -271,7 +285,9 @@ public class Interferometr extends JFrame implements ActionListener, KeyListener
 //--bottomPanel---------------------------------------------------------
         
         bottomPanel=new JPanel() {
-        	public void paintComponent(Graphics g) {
+			private static final long serialVersionUID = 1L;
+
+			public void paintComponent(Graphics g) {
         		Graphics2D g2d=(Graphics2D) g;
         		g2d.setPaint(colorBG);
         		g2d.fillRect(0,0,getWidth(),getHeight());
@@ -283,21 +299,37 @@ public class Interferometr extends JFrame implements ActionListener, KeyListener
         ImageIcon iconStop = new ImageIcon("./images/stop.png");
         
         buttonStart=new JButton("Start",iconPlay);
+        buttonStart.setPreferredSize(new Dimension (70,35));
         buttonStop=new JButton("Stop",iconStop);
+        buttonStop.setPreferredSize(new Dimension (70,35));
         buttonEnd = new JButton(resourceBundle.getString("end"));
+        buttonEnd.setPreferredSize(new Dimension (80,35));
+        buttonAn = new JButton(resourceBundle.getString("animation"));
+        buttonAn.setPreferredSize(new Dimension (90,35));
+        buttonAn.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (selectedButton == "A") {
+					centerPanel.startAnimation();
+					timer.start();
+					requestFocus();
+				}
+			}
+        	
+        });
         
         buttonStart.setBackground(colorComponent);
         buttonStart.setForeground(colorText);
         buttonStart.setActionCommand("A");
-		buttonStop.setActionCommand("B");
-        
+		buttonStop.setActionCommand("B");        
         buttonStop.setBackground(colorComponent);
         buttonStop.setForeground(colorText);
-        buttonStop.setSelected(true);
-        
+        buttonStop.setSelected(true);        
         buttonEnd.setBackground(colorComponent);
         buttonEnd.setForeground(colorText);
-        
+        buttonAn.setBackground(colorComponent);
+        buttonAn.setForeground(colorText);
         
         
         buttonStart.addActionListener(new ActionListener() //uruchamiamy symulacje
@@ -305,10 +337,9 @@ public class Interferometr extends JFrame implements ActionListener, KeyListener
 	           @Override
 	           public void actionPerformed(ActionEvent e) 
 	           {
-	        	   slider.disable();//slider sie deaktywuje
-	        	   requestFocus();//ustawiamy focus na frame zeby zwierciadlo sie ruszalo
-	        	   timer.start();//timer tez jest po to zeby zwierciadlo sie ruszalo
+	        	   slider.disable();//slider sie deaktywuje   
 	        	   selectedButton = "A";//ustawiamy aby pojawil sie oscykoskop
+	        	   requestFocus();//ustawiamy focus na frame zeby zwierciadlo sie ruszalo
 	           }
 	       });
         
@@ -320,6 +351,8 @@ public class Interferometr extends JFrame implements ActionListener, KeyListener
 	        	   slider.enable();//teraz mozemy zmienic wartosc na sliderze
 	        	   timer.stop();
 	        	   selectedButton = "B";// dane z oscyloskopu znikaja
+	        	   centerPanel.delete();
+	        	   xyDataset2.removeAllSeries();        	   
 	           }
 	       });
         
@@ -327,68 +360,56 @@ public class Interferometr extends JFrame implements ActionListener, KeyListener
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.exit(1);
-				
+				System.exit(1);				
 			}
         	
         });
         
         ButtonGroup group2 = new ButtonGroup();
 		group2.add(buttonStart);
-		group2.add(buttonStop);
-        
+		group2.add(buttonStop);       
         bottomPanel.add(buttonStart);
+        bottomPanel.add(buttonAn);
         bottomPanel.add(buttonStop);
-        bottomPanel.add(buttonEnd);
-        
+        bottomPanel.add(buttonEnd);        
         this.add(bottomPanel, BorderLayout.PAGE_END);
 //--leftPanel-----------------------------------------------------------
         
         leftPanel=new JPanel() {
-        	public void paintComponent(Graphics g) {
+			private static final long serialVersionUID = 1L;
+
+			public void paintComponent(Graphics g) {
         		Graphics2D g2d=(Graphics2D) g;
         		g2d.setPaint(colorBG);
         		g2d.fillRect(0,0,getWidth(),getHeight());
         	}
-        };
-    	
+        };    	
         this.add(leftPanel, BorderLayout.LINE_START);
 //--rightPanel----------------------------------------------------------
         
         rightPanel=new JPanel() {
-        	public void paintComponent(Graphics g) {
+			private static final long serialVersionUID = 1L;
+
+			public void paintComponent(Graphics g) {
         		Graphics2D g2d=(Graphics2D) g;
         		g2d.setPaint(new Color(12, 82, 82));
         		g2d.fillRect(100,0,getWidth(),getHeight());
         	}
         };
-        rightPanel.setLayout(new GridLayout(2,1));
-        
+        rightPanel.setLayout(new GridLayout(2,1));       
 		createChart(lambda,amplitude,add);//zebysmy widzieli wykresy od samego poczatku dzialania programu
-
         this.add(rightPanel, BorderLayout.LINE_END);
 //--centerPanel---------------------------------------------------------
         
-        centerPanel=new JPanel(){
-
-        	private static final long serialVersionUID = 1L;
-        	public void paintComponent(Graphics g) { //tworzymy obraz interferometru
-        		super.paintComponent(g);
-        		Picture obraz=new Picture();
-        		obraz.setAdd(add);
-        		obraz.setNames(pictureGenerator,pictureDetector,pictureMirror100,pictureMirror50);// resourceBundle.getString("detector"), resourceBundle.getString("mirr100"), resourceBundle.getString("mirr50"));;
-        		obraz.paint(g);
-        		}
-    	};
+        centerPanel = new CenterPanel(pictureGenerator,pictureDetector,pictureMirror100,pictureMirror50);
         
-    	addKeyListener(this);//dodajemy key listner do frame'a
-    	
+    	addKeyListener(this);//dodajemy key listner do frame'a   	
         this.add(centerPanel, BorderLayout.CENTER);
 	}
 	
 	public void createChart(int lambda, int amplitude, int currentX)//funkcja do tworzenia wykresu i oscyloskopa
 	{
-		//--wykres----------------------------------------------------------------------------
+//--wykres----------------------------------------------------------------------------
 		
 		dataSet = new XYSeries("");
         
@@ -410,9 +431,8 @@ public class Interferometr extends JFrame implements ActionListener, KeyListener
 	    
 	    imageChart = lineGraph.createBufferedImage(400,300);       
         lblChart.setIcon(new ImageIcon(imageChart));
-        rightPanel.add(lblChart);
-        
-        //--oscyloskop-------------------------------------------------------------------------
+        rightPanel.add(lblChart);        
+//--oscyloskop-------------------------------------------------------------------------
 
         int getCm=0;//zmienna okreslajaca polozenie zwierciadla w interferometrze
         //zakladamy ze ramiona interferomatru maja po 30 cm
@@ -424,23 +444,22 @@ public class Interferometr extends JFrame implements ActionListener, KeyListener
         for (int z=0;z<40;z++) {
         	I[z]=(amplitude*amplitude)/2+(amplitude*amplitude)/2+amplitude*amplitude*Math.cos((2*Math.PI*z)/lambda);
         }
-        	
-   
+        	 
         dataSet2 = new XYSeries("");
         dataSet2.add(0,scale);//po to zeby skala sie nie zmieniala przy kazdej zmianie natezenia
         if(selectedButton =="A") {
         for (double i=0.05; i <5.05; i+=0.05)//zeby przebieg byl prostokatny
         	dataSet2.add(i,0);
         for (double i=5.05; i <10.05; i+=0.05)
-        	dataSet2.add(i,I[getCm]);
+        	dataSet2.add(i,I[getCm]+=0.0001);
         for (double i=10.05; i <15.05; i+=0.05)
         	dataSet2.add(i,0);
         for (double i=15.05; i <20.05; i+=0.05)
-        	dataSet2.add(i,I[getCm]);
+        	dataSet2.add(i,I[getCm]+=0.0001);
         for (double i=20.05; i <25.05; i+=0.05)
         	dataSet2.add(i,0);
         for (double i=25.05; i <30.05; i+=0.05)
-        	dataSet2.add(i,I[getCm]);
+        	dataSet2.add(i,I[getCm]+=0.0001);
         for (double i=30.05; i <33.25; i+=0.05)
         	dataSet2.add(i,0);
         }
@@ -460,14 +479,7 @@ public class Interferometr extends JFrame implements ActionListener, KeyListener
 	    
 	    imageOscy = lineGraph2.createBufferedImage(400,300);       
         lblOscy.setIcon(new ImageIcon(imageOscy));
-        rightPanel.add(lblOscy);
-        
-        System.out.println("getCm: "+getCm);//to zeby moc sledzic obliczenia, gdy program bedzie skonczony to usuniemy
-        System.out.println("Natezenie: "+I[getCm]);
-        System.out.println("Lambda: "+lambda);
-        System.out.println("Amplituda: "+amplitude);
-        System.out.println("Cos: "+Math.cos((2*Math.PI*getCm)/lambda));
-        
+        rightPanel.add(lblOscy);       
         this.repaint(); 
 	}
 	
@@ -475,17 +487,14 @@ public class Interferometr extends JFrame implements ActionListener, KeyListener
 	{
 
 	// parent component of the dialog
-	  parentFrame = new JFrame();
-	   
+	  parentFrame = new JFrame();	   
 	  JFileChooser fileChooser = new JFileChooser();
 	  fileChooser.setDialogTitle("Zapisz wykres");   
 	   
 	  int userSelection = fileChooser.showSaveDialog(parentFrame);
 	   
-	  if (userSelection == JFileChooser.APPROVE_OPTION) {
-		  
+	  if (userSelection == JFileChooser.APPROVE_OPTION) {		  
 	      outputFile = fileChooser.getSelectedFile();
-
           fname = outputFile.getAbsolutePath();//to dodalam po to zeby zapisany plik byl w formacie png
           if(!fname.endsWith(".png") ) {
         	  outputFile = new File(fname + ".png");
@@ -498,10 +507,10 @@ public class Interferometr extends JFrame implements ActionListener, KeyListener
 	    	}
 	      
 	      System.out.println("Save as file: " + outputFile.getAbsolutePath());
-	  }
-	  
-	  //tutaj zapisujemy pdf
+	  }	  
+//tutaj zapisujemy pdf
 	  try {
+		  Document document=new Document();
 		  PdfWriter.getInstance(document, new FileOutputStream(fname + ".pdf"));
 		  document.open();
 		  document.add(new Paragraph("Dlugosc fali: "+Integer.toString(lambda)+" cm"));
@@ -516,11 +525,10 @@ public class Interferometr extends JFrame implements ActionListener, KeyListener
 	  
 	}
 
-	
+//MAIN	
 	public static void main(String[] args) {
 		Interferometr frame = new Interferometr("Interferometr Michelsona");
 		frame.setVisible(true);
-
 	}
 	
 	public class SliderChangeListener implements ChangeListener 
@@ -535,11 +543,10 @@ public class Interferometr extends JFrame implements ActionListener, KeyListener
             createChart(lambda,amplitude,add);
         }
     }
-
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
-		//--nasluchujemy przyciskow----------------------------------------------------------------
+//--nasluchujemy przyciskow----------------------------------------------------------------
 		
 		Object choice=e.getSource();
 
@@ -558,74 +565,52 @@ public class Interferometr extends JFrame implements ActionListener, KeyListener
 			scale=200;
 			createChart(lambda,amplitude,add);
 		}
-		else if(choice==download) {
-
-		}
 		else if(choice==save) {
 			try {
 				save();
 			} catch (FileNotFoundException | DocumentException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			} catch (MalformedURLException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-		}
-		
-		//--nasluchujemy zmian polozenia zwierciadla------------------------------------------------
-
-		if(add<0)
-		{
+		}		
+//--nasluchujemy zmian polozenia zwierciadla------------------------------------------------
+		if(add<0){
 			velX=0;//velX to wartosc o jaka zmieniamy polozenie przy kazdym kliknieciu
 			add=0;//add to polozenie zwierciadla, zmienia sie od 0 do 240 bo zwierciadlo moze sie maksymalnie przemiescic o 240 pikseli
-			System.out.println("AC1: "+add);
 		}
-		if(add>240)
-		{
+		if(add>240){
 			velX=0;
 			add=240;
-			System.out.println("AC2: "+add);
-		}
-		
+		}		
 		add=add+velX;
-		createChart(lambda,amplitude,add);//aktualizujemy oscyloskop 
-		
-		System.out.println("AC3: "+add);//to zeby sledzic wspolrzedne, do usuniecia gdy program bedzie skonczony
-		
+		createChart(lambda,amplitude,add);//aktualizujemy oscyloskop 		
 		repaint();
 		
 	}
-
 	@Override
 	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
 		int c=e.getKeyCode();
+		timer.start();//timer tez jest po to zeby zwierciadlo sie ruszalo
 		
 		if(c==KeyEvent.VK_LEFT)//sprawdzamy ktory przycisk zostal nacisniety
 		{
 			velX=-8;//zmieniamy polozenie zwierciadla o 8 pikseli w lewo
-			System.out.println("Key Pressed: "+add);
 		}
 		if(c==KeyEvent.VK_RIGHT)
 		{
 			velX=8;//zmieniamy polozenie zwierciadla o 8 pikseli w prawo
 		}
 	}
-
 	@Override
 	public void keyReleased(KeyEvent arg0) {
-		// TODO Auto-generated method stub
+		timer.stop();
 		velX=0;//zeby zwierciadlo sie nie przemieszczalo po puszczeniu przycisku
-		System.out.println("Key Released: "+add);
 	}
-
 	@Override
 	public void keyTyped(KeyEvent arg0) {
-		// TODO Auto-generated method stub
 		
 	}
 	
